@@ -6,11 +6,16 @@ box::use(
   dplyr[mutate, slice],
   # purrr[map_dfr = map_dfr],
   furrr[map_dfr = future_map_dfr],
-  future[ft_plan = plan, ft_cluster = cluster],
-  tictoc[tic, toc]
+  future[ft_plan = plan, ft_session = multisession, ft_seq = sequential],
+  tictoc[tic, toc],
+  readr[write_csv],
+  glue[glue]
 )
 
-ft_plan(ft_cluster(workers = 6L))
+box::reload(keys_info)
+
+#ft_plan(ft_cluster(workers = 4L))
+ft_plan(ft_session(workers = 6L))
 
 proc_file <- function(path) {
   path |>
@@ -20,11 +25,14 @@ proc_file <- function(path) {
 
 
 tic()
-
-fs_path("G:", "Data", "B", "20210706") |>
+root <- fs_path("G:", "Data")
+filter <- "V"
+fs_path(root, filter) |>
   dir_ls(glob = "*.fits", recurse = TRUE) |>
   file_data$get() |>
-  mutate(map_dfr(path, proc_file)) |>
-  print()
+  mutate(map_dfr(path, proc_file, .progress = TRUE)) |>
+  match_type() |>
+  write_csv(glue("log{filter}.csv"))
+  
 
 toc()
