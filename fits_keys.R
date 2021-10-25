@@ -1,5 +1,5 @@
 box::use(
-  FITSio[readFITSheader],
+  ./fits[read_header],
   stringr[str_sub, str_trim, str_locate_all],
   tibble[as_tibble],
   dplyr[mutate, across, if_else],
@@ -9,7 +9,7 @@ box::use(
 #' @export
 get <- function(path) {
   path |> 
-    readFITSheader() -> input
+    read_header() -> input
   
   keys <- input |>
     str_sub(1, 8) |>

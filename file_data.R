@@ -1,7 +1,7 @@
 box::use(
   fs[...],
   tibble[tibble],
-  dplyr[mutate, if_else],
+  dplyr[mutate, if_else, filter],
   stringr[str_match],
   readr[parse_integer],
   forcats[as_factor]
@@ -22,6 +22,6 @@ get <- function(path) {
       filter = test[, 4] |> as_factor(),
       id = test[, 5] |> parse_integer(),
       .keep = "unused"
-    )
-    
+    ) |>
+    filter(!is.na(target))
 }
