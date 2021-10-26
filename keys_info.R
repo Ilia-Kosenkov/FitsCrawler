@@ -2,7 +2,7 @@ box::use(
   dplyr[filter, mutate, distinct, across, if_else],
   tidyr[pivot_wider],
   readr[parse_integer, parse_double],
-  stringr[str_replace_all, str_trim],
+  stringr[str_replace_all, str_replace, str_trim],
   forcats[as_factor]
 )
 #' @export
@@ -22,7 +22,7 @@ match_type <- function(table) {
       across(
         c(
           BITPIX, NAXIS, NAXIS1, NAXIS2, 
-          INDEX, BITDEP, ADCONV, FILTER
+          INDEX, BITDEP, ADCONV
         ),
         parse_integer
       ),
@@ -32,9 +32,9 @@ match_type <- function(table) {
           EXPTIME, VSPEED, HSPEED, CCDGAIN,
           ANGLE, RAWANGLE
         ), 
-        parse_double
+        \(.x) str_replace(.x, "(?<=\\d),(?=\\d)", ".") |> parse_double()
       ),
-      across(is.character, \(.x) {str_replace_all(.x, "'", "") |> str_trim()}),
+      across(where(is.character), \(.x) {str_replace_all(.x, "'", "") |> str_trim()}),
       END = NULL,
       across(
         c(

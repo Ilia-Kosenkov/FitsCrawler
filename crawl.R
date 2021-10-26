@@ -25,8 +25,9 @@ proc_file <- function(path) {
 
 
 tic()
-root <- fs_path("G:", "Data")
-filter <- "V"
+root <- fs_path(NULL) # Update path
+filter <- "B"
+
 fs_path(root, filter) |>
   dir_ls(glob = "*.fits", recurse = TRUE) |>
   file_data$get() |>
